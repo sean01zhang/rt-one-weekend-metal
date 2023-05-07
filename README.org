@@ -8,20 +8,9 @@ without polymorphism. This is important, as according to the Metal Language
 Specification, the virtual function attribute is not available in Metal, as well as
 derived classes.
 
-** What I don't know
 There are still a few questions I have though. How am I supposed to pass structs into metal?
 Can I avoid having to define these structs both in the shader code and main code?
 Is it possible to have high-quality random numbers generated?
-- How can one start understanding metal shader language, and it's functions?
-
-
-** What I came to not know
-- Metal does not have a built-in pseudo-RNG like CUDA has.
-- Since each thread is completely independent on each other,
-  how can I produce high quality randomness?
-- Metal does not support double precision floats. This may impact the produced image.
-- Metal does not support the C++ standard library, so I will need to find replacements for
-  some constants, data structures, and such.
 
 * Starting point
 ** The Idea

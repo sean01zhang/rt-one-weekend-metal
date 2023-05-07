@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-05-06 Sat 22:45 -->
+<!-- 2023-05-06 Sat 23:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Ray Tracing</title>
@@ -225,49 +225,49 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org7e7ff33">1. Introduction</a>
+<li><a href="#orgac6c1d9">1. Introduction</a>
 <ul>
-<li><a href="#org6f8ece7">1.1. What I don't know</a></li>
-<li><a href="#orgb44643c">1.2. What I came to not know</a></li>
+<li><a href="#org69e1f5d">1.1. What I didn't know before starting</a></li>
+<li><a href="#org6832520">1.2. Things that arose while working on this project</a></li>
 </ul>
 </li>
-<li><a href="#org696bd75">2. Starting point</a>
+<li><a href="#org0918853">2. Starting point</a>
 <ul>
-<li><a href="#org65df017">2.1. The Idea</a></li>
-<li><a href="#orgd18a104">2.2. Setting up the compute pipeline for the GPU</a></li>
-<li><a href="#orgc73d449">2.3. Compute Pipeline Function</a>
+<li><a href="#orgaa8841d">2.1. The Idea</a></li>
+<li><a href="#orgd56b9da">2.2. Setting up the compute pipeline for the GPU</a></li>
+<li><a href="#org17bb393">2.3. Compute Pipeline Function</a>
 <ul>
-<li><a href="#org41040dd">2.3.1. Input</a></li>
+<li><a href="#org96e00b3">2.3.1. Input</a></li>
 </ul>
 </li>
-<li><a href="#org93dcbbf">2.4. Finishing compute pipeline setup</a></li>
-<li><a href="#orgcf956bf">2.5. Modifications to other files</a></li>
+<li><a href="#orgcc0b3b4">2.4. Finishing compute pipeline setup</a></li>
+<li><a href="#orgaf4e83a">2.5. Modifications to other files</a></li>
 </ul>
 </li>
-<li><a href="#org2449308">3. Mistakes</a>
+<li><a href="#org6754334">3. Mistakes</a>
 <ul>
-<li><a href="#org57a2abc">3.1. Indexing</a>
+<li><a href="#org627b1d0">3.1. Indexing</a>
 <ul>
-<li><a href="#org840893b">3.1.1. Vertical and Horizontal Components</a></li>
-<li><a href="#org4d5ea10">3.1.2. Scale Direction</a></li>
+<li><a href="#org006ccb8">3.1.1. Vertical and Horizontal Components</a></li>
+<li><a href="#org723bbff">3.1.2. Scale Direction</a></li>
 </ul>
 </li>
-<li><a href="#orgef2aa2e">3.2. Gamma Correction</a></li>
-<li><a href="#org98d3849">3.3. Shadow Acne</a></li>
-<li><a href="#org61b2d30">3.4. Generally Silly</a></li>
+<li><a href="#org0e3696c">3.2. Gamma Correction</a></li>
+<li><a href="#orgd45b487">3.3. Shadow Acne</a></li>
+<li><a href="#org0377b4c">3.4. Generally Silly</a></li>
 </ul>
 </li>
-<li><a href="#orgef701ed">4. Result</a>
+<li><a href="#org53ad768">4. Result</a>
 <ul>
-<li><a href="#org6c430c3">4.1. Issues</a></li>
+<li><a href="#org7317131">4.1. Issues</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org7e7ff33" class="outline-2">
-<h2 id="org7e7ff33"><span class="section-number-2">1.</span> Introduction</h2>
+<div id="outline-container-orgac6c1d9" class="outline-2">
+<h2 id="orgac6c1d9"><span class="section-number-2">1.</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 So far, I have figured out how metal shaders work, and rewrote my ray tracer
@@ -277,23 +277,20 @@ derived classes.
 </p>
 </div>
 
-<div id="outline-container-org6f8ece7" class="outline-3">
-<h3 id="org6f8ece7"><span class="section-number-3">1.1.</span> What I don't know</h3>
+<div id="outline-container-org69e1f5d" class="outline-3">
+<h3 id="org69e1f5d"><span class="section-number-3">1.1.</span> What I didn't know before starting</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 There are still a few questions I have though. How am I supposed to pass structs into metal?
 Can I avoid having to define these structs both in the shader code and main code?
 Is it possible to have high-quality random numbers generated?
+How can one start understanding metal shader language, and it's functions?
 </p>
-<ul class="org-ul">
-<li>How can one start understanding metal shader language, and it's functions?</li>
-</ul>
 </div>
 </div>
 
-
-<div id="outline-container-orgb44643c" class="outline-3">
-<h3 id="orgb44643c"><span class="section-number-3">1.2.</span> What I came to not know</h3>
+<div id="outline-container-org6832520" class="outline-3">
+<h3 id="org6832520"><span class="section-number-3">1.2.</span> Things that arose while working on this project</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li>Metal does not have a built-in pseudo-RNG like CUDA has.</li>
@@ -307,12 +304,12 @@ some constants, data structures, and such.</li>
 </div>
 </div>
 
-<div id="outline-container-org696bd75" class="outline-2">
-<h2 id="org696bd75"><span class="section-number-2">2.</span> Starting point</h2>
+<div id="outline-container-org0918853" class="outline-2">
+<h2 id="org0918853"><span class="section-number-2">2.</span> Starting point</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org65df017" class="outline-3">
-<h3 id="org65df017"><span class="section-number-3">2.1.</span> The Idea</h3>
+<div id="outline-container-orgaa8841d" class="outline-3">
+<h3 id="orgaa8841d"><span class="section-number-3">2.1.</span> The Idea</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 The GPU will run a trace on a single pixel for every thread assigned to the job. Combined,
@@ -329,8 +326,8 @@ the main function to set up the scene: a list of objects and a camera.
 </div>
 </div>
 
-<div id="outline-container-orgd18a104" class="outline-3">
-<h3 id="orgd18a104"><span class="section-number-3">2.2.</span> Setting up the compute pipeline for the GPU</h3>
+<div id="outline-container-orgd56b9da" class="outline-3">
+<h3 id="orgd56b9da"><span class="section-number-3">2.2.</span> Setting up the compute pipeline for the GPU</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 Before we begin, we must start by setting up the necessary structure for using the GPU.
@@ -343,7 +340,7 @@ will be within the same directory as the executable, and will be called <code>sh
 <b>&gt;&gt; Initialize Compute Pipeline</b>
 </p>
 <div class="org-src-container">
-<pre class="src src-C++" id="org92ebb26"><span style="color: #505050;">// Pipeline Setup</span>
+<pre class="src src-C++" id="org728f57b"><span style="color: #505050;">// Pipeline Setup</span>
 <span style="color: #505050;">// create device</span>
 <span style="color: #005a5f;">MTL</span>::<span style="color: #005a5f;">Device</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">device</span> <span style="color: #5317ac;">=</span> <span style="color: #005a5f;">MTL</span>::<span style="color: #0000c0;">CreateSystemDefaultDevice</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
 <span style="color: #005a5f;">NS</span>::<span style="color: #005a5f;">Error</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">error</span><span style="color: #000000; background-color: #ffffff;">;</span>
@@ -386,12 +383,12 @@ command_encoder<span style="color: #5317ac;">-&gt;</span><span style="color: #00
 </div>
 </div>
 
-<div id="outline-container-orgc73d449" class="outline-3">
-<h3 id="orgc73d449"><span class="section-number-3">2.3.</span> Compute Pipeline Function</h3>
+<div id="outline-container-org17bb393" class="outline-3">
+<h3 id="org17bb393"><span class="section-number-3">2.3.</span> Compute Pipeline Function</h3>
 <div class="outline-text-3" id="text-2-3">
 </div>
-<div id="outline-container-org41040dd" class="outline-4">
-<h4 id="org41040dd"><span class="section-number-4">2.3.1.</span> Input</h4>
+<div id="outline-container-org96e00b3" class="outline-4">
+<h4 id="org96e00b3"><span class="section-number-4">2.3.1.</span> Input</h4>
 <div class="outline-text-4" id="text-2-3-1">
 <p>
 Looking at the current signature of the <code>trace_image</code> function:
@@ -473,8 +470,8 @@ pixel it is assigned to work on.
 </div>
 </div>
 
-<div id="outline-container-org93dcbbf" class="outline-3">
-<h3 id="org93dcbbf"><span class="section-number-3">2.4.</span> Finishing compute pipeline setup</h3>
+<div id="outline-container-orgcc0b3b4" class="outline-3">
+<h3 id="orgcc0b3b4"><span class="section-number-3">2.4.</span> Finishing compute pipeline setup</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 We will use a texture to represent the output, encoded as RGBA8Unorm, which has each component
@@ -494,8 +491,8 @@ commit the buffer to the GPU, and wait for it to finish.
 </div>
 </div>
 
-<div id="outline-container-orgcf956bf" class="outline-3">
-<h3 id="orgcf956bf"><span class="section-number-3">2.5.</span> Modifications to other files</h3>
+<div id="outline-container-orgaf4e83a" class="outline-3">
+<h3 id="orgaf4e83a"><span class="section-number-3">2.5.</span> Modifications to other files</h3>
 <div class="outline-text-3" id="text-2-5">
 <p>
 <code>camera.h</code>, <code>material.h</code>, and <code>hittable.h</code> are shared
@@ -523,8 +520,8 @@ the RNG object in order to generate random numbers.
 </div>
 </div>
 
-<div id="outline-container-org2449308" class="outline-2">
-<h2 id="org2449308"><span class="section-number-2">3.</span> Mistakes</h2>
+<div id="outline-container-org6754334" class="outline-2">
+<h2 id="org6754334"><span class="section-number-2">3.</span> Mistakes</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 These are some insights that may serve me well in the future. After all,
@@ -532,12 +529,12 @@ I don't want to repeat my mistakes again.
 </p>
 </div>
 
-<div id="outline-container-org57a2abc" class="outline-3">
-<h3 id="org57a2abc"><span class="section-number-3">3.1.</span> Indexing</h3>
+<div id="outline-container-org627b1d0" class="outline-3">
+<h3 id="org627b1d0"><span class="section-number-3">3.1.</span> Indexing</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org840893b" class="outline-4">
-<h4 id="org840893b"><span class="section-number-4">3.1.1.</span> Vertical and Horizontal Components</h4>
+<div id="outline-container-org006ccb8" class="outline-4">
+<h4 id="org006ccb8"><span class="section-number-4">3.1.1.</span> Vertical and Horizontal Components</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <p>
 When you store <code>thread_position_in_grid</code> as a vector (in our case it's length 2), <code>index</code>,
@@ -593,8 +590,8 @@ And here's what the noise looks like if you set the seed to 0 for all threads: <
 </div>
 </div>
 
-<div id="outline-container-org4d5ea10" class="outline-4">
-<h4 id="org4d5ea10"><span class="section-number-4">3.1.2.</span> Scale Direction</h4>
+<div id="outline-container-org723bbff" class="outline-4">
+<h4 id="org723bbff"><span class="section-number-4">3.1.2.</span> Scale Direction</h4>
 <div class="outline-text-4" id="text-3-1-2">
 <p>
 Another weird quirk of the index is that for the y-axis, it is not inverted.
@@ -605,8 +602,8 @@ This led to my initial images being upside-down.
 </div>
 </div>
 
-<div id="outline-container-orgef2aa2e" class="outline-3">
-<h3 id="orgef2aa2e"><span class="section-number-3">3.2.</span> Gamma Correction</h3>
+<div id="outline-container-org0e3696c" class="outline-3">
+<h3 id="org0e3696c"><span class="section-number-3">3.2.</span> Gamma Correction</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 There are certain texture pixel formats that actually do consider gamma correction.
@@ -615,8 +612,8 @@ There are certain texture pixel formats that actually do consider gamma correcti
 </div>
 </div>
 
-<div id="outline-container-org98d3849" class="outline-3">
-<h3 id="org98d3849"><span class="section-number-3">3.3.</span> Shadow Acne</h3>
+<div id="outline-container-orgd45b487" class="outline-3">
+<h3 id="orgd45b487"><span class="section-number-3">3.3.</span> Shadow Acne</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 Since metal does not have double-precision floating point numbers, I suspect the near-misses
@@ -626,8 +623,8 @@ this yet.
 </div>
 </div>
 
-<div id="outline-container-org61b2d30" class="outline-3">
-<h3 id="org61b2d30"><span class="section-number-3">3.4.</span> Generally Silly</h3>
+<div id="outline-container-org0377b4c" class="outline-3">
+<h3 id="org0377b4c"><span class="section-number-3">3.4.</span> Generally Silly</h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 I flipped a sign in my <code>random_in_range</code> function, which made the function output
@@ -640,11 +637,11 @@ unreliable random numbers, these other random functions were infinitely looping.
 </div>
 </div>
 
-<div id="outline-container-orgef701ed" class="outline-2">
-<h2 id="orgef701ed"><span class="section-number-2">4.</span> Result</h2>
+<div id="outline-container-org53ad768" class="outline-2">
+<h2 id="org53ad768"><span class="section-number-2">4.</span> Result</h2>
 <div class="outline-text-2" id="text-4">
 
-<div id="orgcfe9174" class="figure">
+<div id="orgb3003bc" class="figure">
 <p><img src="./img/show_small.png" alt="show_small.png" width="600px" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Not much visual improvement, but it's fast</p>
@@ -699,8 +696,8 @@ difficult and complex scenes.
 </p>
 </div>
 
-<div id="outline-container-org6c430c3" class="outline-3">
-<h3 id="org6c430c3"><span class="section-number-3">4.1.</span> Issues</h3>
+<div id="outline-container-org7317131" class="outline-3">
+<h3 id="org7317131"><span class="section-number-3">4.1.</span> Issues</h3>
 <div class="outline-text-3" id="text-4-1">
 <ol class="org-ol">
 <li>The output looks like it lost a bit of blueness compared to the reference.
@@ -714,7 +711,7 @@ The samples per pixel on metal seem to affect noise much less
 than on CPU. This may have to do with how the sampling is done.
 </p>
 
-<div id="orgf5bca2a" class="figure">
+<div id="org41ac391" class="figure">
 <p><img src="./img/it_just_quits.png" alt="it_just_quits.png" />
 </p>
 <p><span class="figure-number">Figure 2: </span>It just quits midway, and leaves the rest black.</p>
