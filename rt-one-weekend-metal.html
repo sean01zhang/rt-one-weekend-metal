@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-05-06 Sat 22:45 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ray Tracing</title>
+<meta name="author" content="Sean Zhang" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Ray Tracing
+<br />
+<span class="subtitle">Using Metal to accelerate my Ray Tracer</span>
+</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org7e7ff33">1. Introduction</a>
+<ul>
+<li><a href="#org6f8ece7">1.1. What I don't know</a></li>
+<li><a href="#orgb44643c">1.2. What I came to not know</a></li>
+</ul>
+</li>
+<li><a href="#org696bd75">2. Starting point</a>
+<ul>
+<li><a href="#org65df017">2.1. The Idea</a></li>
+<li><a href="#orgd18a104">2.2. Setting up the compute pipeline for the GPU</a></li>
+<li><a href="#orgc73d449">2.3. Compute Pipeline Function</a>
+<ul>
+<li><a href="#org41040dd">2.3.1. Input</a></li>
+</ul>
+</li>
+<li><a href="#org93dcbbf">2.4. Finishing compute pipeline setup</a></li>
+<li><a href="#orgcf956bf">2.5. Modifications to other files</a></li>
+</ul>
+</li>
+<li><a href="#org2449308">3. Mistakes</a>
+<ul>
+<li><a href="#org57a2abc">3.1. Indexing</a>
+<ul>
+<li><a href="#org840893b">3.1.1. Vertical and Horizontal Components</a></li>
+<li><a href="#org4d5ea10">3.1.2. Scale Direction</a></li>
+</ul>
+</li>
+<li><a href="#orgef2aa2e">3.2. Gamma Correction</a></li>
+<li><a href="#org98d3849">3.3. Shadow Acne</a></li>
+<li><a href="#org61b2d30">3.4. Generally Silly</a></li>
+</ul>
+</li>
+<li><a href="#orgef701ed">4. Result</a>
+<ul>
+<li><a href="#org6c430c3">4.1. Issues</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org7e7ff33" class="outline-2">
+<h2 id="org7e7ff33"><span class="section-number-2">1.</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+So far, I have figured out how metal shaders work, and rewrote my ray tracer
+without polymorphism. This is important, as according to the Metal Language
+Specification, the virtual function attribute is not available in Metal, as well as
+derived classes.
+</p>
+</div>
+
+<div id="outline-container-org6f8ece7" class="outline-3">
+<h3 id="org6f8ece7"><span class="section-number-3">1.1.</span> What I don't know</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+There are still a few questions I have though. How am I supposed to pass structs into metal?
+Can I avoid having to define these structs both in the shader code and main code?
+Is it possible to have high-quality random numbers generated?
+</p>
+<ul class="org-ul">
+<li>How can one start understanding metal shader language, and it's functions?</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-orgb44643c" class="outline-3">
+<h3 id="orgb44643c"><span class="section-number-3">1.2.</span> What I came to not know</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li>Metal does not have a built-in pseudo-RNG like CUDA has.</li>
+<li>Since each thread is completely independent on each other,
+how can I produce high quality randomness?</li>
+<li>Metal does not support double precision floats. This may impact the produced image.</li>
+<li>Metal does not support the C++ standard library, so I will need to find replacements for
+some constants, data structures, and such.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org696bd75" class="outline-2">
+<h2 id="org696bd75"><span class="section-number-2">2.</span> Starting point</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org65df017" class="outline-3">
+<h3 id="org65df017"><span class="section-number-3">2.1.</span> The Idea</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+The GPU will run a trace on a single pixel for every thread assigned to the job. Combined,
+we will get the full image. This does mean that each GPU thread makes multiple
+samples of each pixel. I am considering instead to allocate more threads so they
+can handle repeated sampling in parallel.
+</p>
+
+<p>
+Basically, we are taking the <code>trace_image</code> function used in the previous ray tracing with no
+polymorphism project and moving it to the GPU (along with any helper functions called). This leaves
+the main function to set up the scene: a list of objects and a camera.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd18a104" class="outline-3">
+<h3 id="orgd18a104"><span class="section-number-3">2.2.</span> Setting up the compute pipeline for the GPU</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Before we begin, we must start by setting up the necessary structure for using the GPU.
+Taking this from the gpu project that I did, there is very little that needs to be
+changed. For the function name, we will call it "<code>trace_image</code>". The path to the library
+will be within the same directory as the executable, and will be called <code>shader.metallib</code>.
+</p>
+
+<p>
+<b>&gt;&gt; Initialize Compute Pipeline</b>
+</p>
+<div class="org-src-container">
+<pre class="src src-C++" id="org92ebb26"><span style="color: #505050;">// Pipeline Setup</span>
+<span style="color: #505050;">// create device</span>
+<span style="color: #005a5f;">MTL</span>::<span style="color: #005a5f;">Device</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">device</span> <span style="color: #5317ac;">=</span> <span style="color: #005a5f;">MTL</span>::<span style="color: #0000c0;">CreateSystemDefaultDevice</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #005a5f;">NS</span>::<span style="color: #005a5f;">Error</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">error</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+<span style="color: #505050;">// create command queue</span>
+<span style="color: #005a5f;">MTL</span>::<span style="color: #005a5f;">CommandQueue</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">command_queue</span> <span style="color: #5317ac;">=</span> device<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">newCommandQueue</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #505050;">// create command buffer</span>
+<span style="color: #005a5f;">MTL</span>::<span style="color: #005a5f;">CommandBuffer</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">command_buffer</span> <span style="color: #5317ac;">=</span> command_queue<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">commandBuffer</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #505050;">// create command encoder</span>
+<span style="color: #005a5f;">MTL</span>::<span style="color: #005a5f;">ComputeCommandEncoder</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">command_encoder</span> <span style="color: #5317ac;">=</span>
+    command_buffer<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">computeCommandEncoder</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+<span style="color: #505050;">// ** Create pipeline state object</span>
+<span style="color: #005a5f;">NS</span>::<span style="color: #005a5f;">String</span> <span style="color: #5317ac;">*</span><span style="color: #00538b;">libPath</span> <span style="color: #5317ac;">=</span>
+    <span style="color: #005a5f;">NS</span>::<span style="color: #0000c0;">String</span><span style="color: #0000c0;">::string</span><span style="color: #000000; background-color: #ffffff;">(</span><span style="color: #2544bb;">"./shader.metallib"</span><span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #005a5f;">NS</span>::UTF8StringEncoding<span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #005a5f;">auto</span> <span style="color: #00538b;">default_library</span> <span style="color: #5317ac;">=</span> device<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">newLibrary</span><span style="color: #000000; background-color: #ffffff;">(</span>libPath<span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #5317ac;">&amp;</span>error<span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #5317ac;">if</span> <span style="color: #000000; background-color: #ffffff;">(</span><span style="color: #5317ac;">!</span>default_library<span style="color: #000000; background-color: #ffffff;">)</span> <span style="color: #000000; background-color: #ffffff;">{</span>
+  <span style="color: #005a5f;">std</span>::cerr <span style="color: #5317ac;">&lt;&lt;</span> <span style="color: #2544bb;">"Failed to load default library."</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #005a5f;">std</span>::<span style="color: #0000c0;">exit</span><span style="color: #a8007f; background-color: #ffffff;">(</span><span style="color: #0000c0;">-1</span><span style="color: #a8007f; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #000000; background-color: #ffffff;">}</span>
+
+<span style="color: #005a5f;">auto</span> <span style="color: #00538b;">trace_image_function_name</span> <span style="color: #5317ac;">=</span>
+    <span style="color: #005a5f;">NS</span>::<span style="color: #0000c0;">String</span><span style="color: #0000c0;">::string</span><span style="color: #000000; background-color: #ffffff;">(</span><span style="color: #2544bb;">"trace_image"</span><span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #005a5f;">NS</span>::ASCIIStringEncoding<span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #005a5f;">auto</span> <span style="color: #00538b;">trace_image_function</span> <span style="color: #5317ac;">=</span> default_library<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">newFunction</span><span style="color: #000000; background-color: #ffffff;">(</span>trace_image_function_name<span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #5317ac;">if</span> <span style="color: #000000; background-color: #ffffff;">(</span><span style="color: #5317ac;">!</span>trace_image_function<span style="color: #000000; background-color: #ffffff;">)</span> <span style="color: #000000; background-color: #ffffff;">{</span>
+  <span style="color: #005a5f;">std</span>::cerr <span style="color: #5317ac;">&lt;&lt;</span> <span style="color: #2544bb;">"failed to find the adder function"</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #000000; background-color: #ffffff;">}</span>
+
+<span style="color: #005a5f;">auto</span> <span style="color: #00538b;">pso</span> <span style="color: #5317ac;">=</span> device<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">newComputePipelineState</span><span style="color: #000000; background-color: #ffffff;">(</span>trace_image_function<span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #5317ac;">&amp;</span>error<span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #505050;">// free defualt library and add function</span>
+trace_image_function_name<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">release</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+default_library<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">release</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+trace_image_function<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">release</span><span style="color: #000000; background-color: #ffffff;">()</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+<span style="color: #505050;">// pass pipeline state object created</span>
+<span style="color: #505050;">// into the command encoder</span>
+command_encoder<span style="color: #5317ac;">-&gt;</span><span style="color: #0000c0; font-style: italic;">setComputePipelineState</span><span style="color: #000000; background-color: #ffffff;">(</span>pso<span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc73d449" class="outline-3">
+<h3 id="orgc73d449"><span class="section-number-3">2.3.</span> Compute Pipeline Function</h3>
+<div class="outline-text-3" id="text-2-3">
+</div>
+<div id="outline-container-org41040dd" class="outline-4">
+<h4 id="org41040dd"><span class="section-number-4">2.3.1.</span> Input</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+Looking at the current signature of the <code>trace_image</code> function:
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="color: #5317ac;">struct</span> <span style="color: #005a5f;">tracing_properties</span> <span style="color: #000000; background-color: #ffffff;">{</span>
+  <span style="color: #8f0075;">double</span> <span style="color: #00538b; font-style: italic;">img_height</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #8f0075;">double</span> <span style="color: #00538b; font-style: italic;">img_width</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #005a5f;">hittable</span> <span style="color: #5317ac;">*</span> <span style="color: #00538b; font-style: italic;">world</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #8f0075;">size_t</span> <span style="color: #00538b; font-style: italic;">world_size</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #8f0075;">double</span> <span style="color: #00538b; font-style: italic;">max_depth</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #005a5f;">camera</span> <span style="color: #00538b; font-style: italic;">cam</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #8f0075;">int</span> <span style="color: #00538b; font-style: italic;">samples_per_px</span><span style="color: #000000; background-color: #ffffff;">;</span>
+<span style="color: #000000; background-color: #ffffff;">}</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+<span style="color: #8f0075;">void</span> <span style="color: #721045;">trace_image</span><span style="color: #000000; background-color: #ffffff;">(</span><span style="color: #5317ac;">struct</span> <span style="color: #005a5f;">tracing_properties</span> <span style="color: #5317ac;">&amp;</span><span style="color: #00538b;">prop</span><span style="color: #000000; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+</pre>
+</div>
+
+<p>
+There are a few modifications to these inputs:
+</p>
+<ol class="org-ol">
+<li>Trace image had a side-effect of modifying a global variable
+which stored the final image. Since global variables can't be seen by the GPU,
+we will need to pass in the output variable into the function to modify. The output
+will be a <code>Texture</code> type, which also has dimension properties built-in (removing the need
+to track <code>img_height</code> and <code>img_width</code>.</li>
+<li>Since each thread will have an independent random number generator from other threads,
+it would be bad if all of them had the same seed, as this would create a predictable
+sequence of random numbers for every thread. Since these samples should be random,
+I will seed each thread's RNG. Thus, we will need to pass in a list of seeds
+for each thread.</li>
+</ol>
+
+<p>
+The function also no longer needs to trace every pixel on the image, only the
+pixel it is assigned to work on.
+</p>
+
+<p>
+<b>&gt;&gt; Trace Image</b>
+</p>
+<div class="org-src-container">
+<pre class="src src-C++"><span style="color: #005a5f;">kernel</span> void <span style="color: #721045;">trace_image</span><span style="color: #000000; background-color: #ffffff;">(</span><span style="color: #005a5f;">texture2d</span><span style="color: #5317ac;">&lt;</span><span style="color: #8f0075;">float</span><span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #005a5f;">access</span>::<span style="color: #005a5f;">write</span><span style="color: #5317ac;">&gt;</span> <span style="color: #00538b;">tex</span> <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>texture<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">0</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">device</span> float <span style="color: #5317ac;">*</span> seeds <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>buffer<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">0</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">device</span> hittable <span style="color: #5317ac;">*</span> world <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>buffer<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">1</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">device</span> int <span style="color: #5317ac;">*</span> world_size <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>buffer<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">2</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">device</span> camera <span style="color: #5317ac;">*</span> cam <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>buffer<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">3</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">device</span> int <span style="color: #5317ac;">*</span> max_depth <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>buffer<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">4</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">device</span> int <span style="color: #5317ac;">*</span> samples_per_px <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>buffer<span style="color: #904200; background-color: #ffffff;">(</span><span style="color: #0000c0;">5</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+                   <span style="color: #005a5f;">uint2</span> <span style="color: #00538b;">index</span> <span style="color: #a8007f;">[</span><span style="color: #005f88;">[</span>thread_position_in_grid<span style="color: #005f88;">]</span><span style="color: #a8007f;">]</span><span style="color: #000000; background-color: #ffffff;">)</span> <span style="color: #000000; background-color: #ffffff;">{</span>
+  <span style="color: #505050;">// seed the rng</span>
+  <span style="color: #005a5f;">mt19937</span> <span style="color: #00538b;">mt</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  mt<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">srand</span><span style="color: #a8007f; background-color: #ffffff;">(</span>seeds<span style="color: #005f88; background-color: #ffffff;">[</span>tex<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">get_width</span><span style="color: #904200; background-color: #ffffff;">()</span> <span style="color: #5317ac;">*</span> index<span style="color: #904200; background-color: #ffffff;">[</span><span style="color: #0000c0;">1</span><span style="color: #904200; background-color: #ffffff;">]</span> <span style="color: #5317ac;">+</span> index<span style="color: #904200; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #904200; background-color: #ffffff;">]</span><span style="color: #005f88; background-color: #ffffff;">]</span><span style="color: #a8007f; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+  <span style="color: #005a5f;">float3</span> <span style="color: #00538b;">pixelColor</span> <span style="color: #5317ac;">=</span> <span style="color: #0000c0;">float3</span><span style="color: #a8007f; background-color: #ffffff;">(</span><span style="color: #0000c0;">0</span><span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #0000c0;">0</span><span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #0000c0;">0</span><span style="color: #a8007f; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+  <span style="color: #5317ac;">for</span> <span style="color: #a8007f; background-color: #ffffff;">(</span><span style="color: #8f0075;">int</span> <span style="color: #00538b;">s</span> <span style="color: #5317ac;">=</span> <span style="color: #0000c0;">0</span><span style="color: #000000; background-color: #ffffff;">;</span> s <span style="color: #5317ac;">&lt;</span> samples_per_px<span style="color: #005f88; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #005f88; background-color: #ffffff;">]</span><span style="color: #000000; background-color: #ffffff;">;</span> <span style="color: #5317ac;">++</span><span style="color: #00538b;">s</span><span style="color: #a8007f; background-color: #ffffff;">)</span> <span style="color: #a8007f; background-color: #ffffff;">{</span>
+    <span style="color: #8f0075;">float</span> <span style="color: #00538b;">u</span> <span style="color: #5317ac;">=</span> <span style="color: #005f88; background-color: #ffffff;">(</span>index<span style="color: #904200; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #904200; background-color: #ffffff;">]</span> <span style="color: #5317ac;">+</span> mt<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">rand</span><span style="color: #904200; background-color: #ffffff;">()</span><span style="color: #005f88; background-color: #ffffff;">)</span> <span style="color: #5317ac;">/</span> <span style="color: #005f88; background-color: #ffffff;">(</span>tex<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">get_width</span><span style="color: #904200; background-color: #ffffff;">()</span> <span style="color: #5317ac;">-</span> <span style="color: #0000c0;">1</span><span style="color: #005f88; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+    <span style="color: #8f0075;">float</span> <span style="color: #00538b;">v</span> <span style="color: #5317ac;">=</span> <span style="color: #005f88; background-color: #ffffff;">(</span>tex<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">get_height</span><span style="color: #904200; background-color: #ffffff;">()</span> <span style="color: #5317ac;">-</span> index<span style="color: #904200; background-color: #ffffff;">[</span><span style="color: #0000c0;">1</span><span style="color: #904200; background-color: #ffffff;">]</span> <span style="color: #5317ac;">+</span> mt<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">rand</span><span style="color: #904200; background-color: #ffffff;">()</span><span style="color: #005f88; background-color: #ffffff;">)</span> <span style="color: #5317ac;">/</span> <span style="color: #005f88; background-color: #ffffff;">(</span>tex<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">get_height</span><span style="color: #904200; background-color: #ffffff;">()</span> <span style="color: #5317ac;">-</span> <span style="color: #0000c0;">1</span><span style="color: #005f88; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+    <span style="color: #00538b;">pixelColor</span> <span style="color: #5317ac;">+=</span> <span style="color: #0000c0;">ray_color</span><span style="color: #005f88; background-color: #ffffff;">(</span>
+      <span style="color: #0000c0;">get_ray_blur</span><span style="color: #904200; background-color: #ffffff;">(</span>cam<span style="color: #000000; background-color: #ffffff;">,</span> u<span style="color: #000000; background-color: #ffffff;">,</span> v<span style="color: #000000; background-color: #ffffff;">,</span> mt<span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">,</span>
+      world<span style="color: #000000; background-color: #ffffff;">,</span> world_size<span style="color: #904200; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #904200; background-color: #ffffff;">]</span><span style="color: #000000; background-color: #ffffff;">,</span> max_depth<span style="color: #904200; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #904200; background-color: #ffffff;">]</span><span style="color: #000000; background-color: #ffffff;">,</span>
+      mt
+    <span style="color: #005f88; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+  <span style="color: #a8007f; background-color: #ffffff;">}</span>
+
+  <span style="color: #505050;">// write to the texture</span>
+  tex<span style="color: #000000; background-color: #ffffff;">.</span><span style="color: #0000c0; font-style: italic;">write</span><span style="color: #a8007f; background-color: #ffffff;">(</span><span style="color: #0000c0;">float4</span><span style="color: #005f88; background-color: #ffffff;">(</span>
+    <span style="color: #005a5f;">metal</span>::<span style="color: #0000c0;">sqrt</span><span style="color: #904200; background-color: #ffffff;">(</span>pixelColor<span style="color: #7f10d0; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #7f10d0; background-color: #ffffff;">]</span> <span style="color: #5317ac;">/</span> samples_per_px<span style="color: #7f10d0; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #7f10d0; background-color: #ffffff;">]</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">,</span>
+    <span style="color: #005a5f;">metal</span>::<span style="color: #0000c0;">sqrt</span><span style="color: #904200; background-color: #ffffff;">(</span>pixelColor<span style="color: #7f10d0; background-color: #ffffff;">[</span><span style="color: #0000c0;">1</span><span style="color: #7f10d0; background-color: #ffffff;">]</span> <span style="color: #5317ac;">/</span> samples_per_px<span style="color: #7f10d0; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #7f10d0; background-color: #ffffff;">]</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">,</span>
+    <span style="color: #005a5f;">metal</span>::<span style="color: #0000c0;">sqrt</span><span style="color: #904200; background-color: #ffffff;">(</span>pixelColor<span style="color: #7f10d0; background-color: #ffffff;">[</span><span style="color: #0000c0;">2</span><span style="color: #7f10d0; background-color: #ffffff;">]</span> <span style="color: #5317ac;">/</span> samples_per_px<span style="color: #7f10d0; background-color: #ffffff;">[</span><span style="color: #0000c0;">0</span><span style="color: #7f10d0; background-color: #ffffff;">]</span><span style="color: #904200; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #0000c0;">1</span><span style="color: #005f88; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">,</span> index<span style="color: #000000; background-color: #ffffff;">,</span> <span style="color: #0000c0;">0</span><span style="color: #a8007f; background-color: #ffffff;">)</span><span style="color: #000000; background-color: #ffffff;">;</span>
+
+<span style="color: #000000; background-color: #ffffff;">}</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org93dcbbf" class="outline-3">
+<h3 id="org93dcbbf"><span class="section-number-3">2.4.</span> Finishing compute pipeline setup</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+We will use a texture to represent the output, encoded as RGBA8Unorm, which has each component
+represented as a float between 0 and 1, and 
+stored as a 8-bit unsigned integer (0 to 255).
+</p>
+
+<p>
+The seeds are stored in a 1D array for convenience but it's basically a squashed
+2D array.
+</p>
+
+<p>
+After setting up the buffers normally, I set the grid size and threadgroup size,
+commit the buffer to the GPU, and wait for it to finish.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgcf956bf" class="outline-3">
+<h3 id="orgcf956bf"><span class="section-number-3">2.5.</span> Modifications to other files</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+<code>camera.h</code>, <code>material.h</code>, and <code>hittable.h</code> are shared
+between both the metal shaders and C++ side.
+Furthermore, metal shader language has specific quirks. For example, you must
+specify address space type for references and pointers. So, I had to remove any function
+declarations/definitions in these header files and make sure that they worked when 
+compiling C++ and Metal. Most of these extra functions ended up in my main
+<code>shader.metal</code> file.
+</p>
+
+<p>
+For these struct definitions, I also needed to make sure that the types can be
+understood for both sides. Thus, for 3d vectors, we use
+simd float3 for compatability. This type translates perfectly fine to metal float3 types and
+is also supported using the simd header in C++. This header seemed to already
+be in my system's headers so I did not have to try to obtain this.
+</p>
+
+<p>
+I also tweaked the way random numbers are generated, so now you need to call
+the RNG object in order to generate random numbers.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2449308" class="outline-2">
+<h2 id="org2449308"><span class="section-number-2">3.</span> Mistakes</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+These are some insights that may serve me well in the future. After all,
+I don't want to repeat my mistakes again.
+</p>
+</div>
+
+<div id="outline-container-org57a2abc" class="outline-3">
+<h3 id="org57a2abc"><span class="section-number-3">3.1.</span> Indexing</h3>
+<div class="outline-text-3" id="text-3-1">
+</div>
+<div id="outline-container-org840893b" class="outline-4">
+<h4 id="org840893b"><span class="section-number-4">3.1.1.</span> Vertical and Horizontal Components</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<p>
+When you store <code>thread_position_in_grid</code> as a vector (in our case it's length 2), <code>index</code>,
+my programmer brain immediately thinks <code>index[0]</code> is the row index, and
+<code>index[1]</code> is the column index. In other words,
+</p>
+
+\begin{align*}
+\text{index} = \left[\begin{matrix}
+row \\
+col
+\end{matrix}\right]
+= \left[\begin{matrix}
+y \\
+x
+\end{matrix}\right]
+\end{align*}
+
+<p>
+However, the index actually follows the order, \(x, y\). In other words:
+</p>
+\begin{align*}
+\text{index} = \left[\begin{matrix}
+y \\
+x
+\end{matrix}\right]
+= \left[\begin{matrix}
+col \\
+row 
+\end{matrix}\right]
+\end{align*}
+
+<p>
+which is <b>the opposite</b> of what I assumed. This is problematic, as I need to retrieve
+a seed for my random number generator. The consequence is since my width is larger than height,
+there is some undefined behaviour when it tries to retrieve things out of that range.
+</p>
+
+<p>
+This illustrates the issue with my RNG for the issue described above: <br />
+<img src="./img/bad_indexing.png" alt="bad_indexing.png" />
+</p>
+
+<p>
+What it should normally look like: <br />
+<img src="./img/good_noise.png" alt="good_noise.png" />
+</p>
+
+<p>
+And here's what the noise looks like if you set the seed to 0 for all threads: <br />
+<img src="./img/rng_seed_zero.png" alt="rng_seed_zero.png" />
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4d5ea10" class="outline-4">
+<h4 id="org4d5ea10"><span class="section-number-4">3.1.2.</span> Scale Direction</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<p>
+Another weird quirk of the index is that for the y-axis, it is not inverted.
+That means that the bottom right is the index (0, 0).
+This led to my initial images being upside-down.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgef2aa2e" class="outline-3">
+<h3 id="orgef2aa2e"><span class="section-number-3">3.2.</span> Gamma Correction</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+There are certain texture pixel formats that actually do consider gamma correction.
+<code>RGBA8Unorm</code> does not, meaning I have to do the correction myself.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org98d3849" class="outline-3">
+<h3 id="org98d3849"><span class="section-number-3">3.3.</span> Shadow Acne</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+Since metal does not have double-precision floating point numbers, I suspect the near-misses
+that cause shadow acne are more frequent due to precision errors. I haven't done anything about
+this yet.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org61b2d30" class="outline-3">
+<h3 id="org61b2d30"><span class="section-number-3">3.4.</span> Generally Silly</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+I flipped a sign in my <code>random_in_range</code> function, which made the function output
+numbers that were not in the range specified. This caused so many headaches, as
+some of the other random functions rely on this function and loop
+if the random number does not have a certain quality. Since <code>random_in_range</code> was producing
+unreliable random numbers, these other random functions were infinitely looping.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgef701ed" class="outline-2">
+<h2 id="orgef701ed"><span class="section-number-2">4.</span> Result</h2>
+<div class="outline-text-2" id="text-4">
+
+<div id="orgcfe9174" class="figure">
+<p><img src="./img/show_small.png" alt="show_small.png" width="600px" />
+</p>
+<p><span class="figure-number">Figure 1: </span>Not much visual improvement, but it's fast</p>
+</div>
+
+<p>
+It's fast. Very fast. 
+For example, we traced the final scene on a 300 pixel wide image with
+10 samples per pixel as a reference for the performance of my tracer. Here are the results:
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Name</td>
+<td class="org-right">Time in seconds (Average, 5 runs)</td>
+<td class="org-right">Relative Performance</td>
+</tr>
+
+<tr>
+<td class="org-left">Reference</td>
+<td class="org-right">26</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-left">No OOP</td>
+<td class="org-right">16</td>
+<td class="org-right">1.625</td>
+</tr>
+
+<tr>
+<td class="org-left">Using GPU</td>
+<td class="org-right">0.40</td>
+<td class="org-right">65</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+And this was the main goal that I wanted to accomplish with this
+project. Now that I have a blazingly fast tracer, we can move on to more
+difficult and complex scenes.
+</p>
+</div>
+
+<div id="outline-container-org6c430c3" class="outline-3">
+<h3 id="org6c430c3"><span class="section-number-3">4.1.</span> Issues</h3>
+<div class="outline-text-3" id="text-4-1">
+<ol class="org-ol">
+<li>The output looks like it lost a bit of blueness compared to the reference.
+I suspect there may be an issue with my <code>ray_color</code> function.
+All I did was convert it to a non-recursive function though.</li>
+<li>For large sizes of samples per pixel, the tracer might just quit. Decreasing the
+threadgroup size might help, but not much is known about why this happens.
+The largest image I have done was at 400 samples per pixel, for a 3000 pixel wide image.</li>
+<li><p>
+The samples per pixel on metal seem to affect noise much less
+than on CPU. This may have to do with how the sampling is done.
+</p>
+
+<div id="orgf5bca2a" class="figure">
+<p><img src="./img/it_just_quits.png" alt="it_just_quits.png" />
+</p>
+<p><span class="figure-number">Figure 2: </span>It just quits midway, and leaves the rest black.</p>
+</div></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

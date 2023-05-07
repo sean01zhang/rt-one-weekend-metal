@@ -1,0 +1,102 @@
+#+TITLE: Metal Graphics API
+#+SUBTITLE: Using Metal for Compute 
+#+OPTIONS: html-postamble:nil
+
+* Introduction
+I wanted to use the GPU for some intesive tasks in C++. Here is a note to self on how to do it.
+To make it clear, this is my first time working with CMake.
+
+* Project Structure
+We will need the metal-cpp library from Apple first. Then, place that into a folder called
+~lib~, under the root of the project. \\
+Then, we will use cmake to generate build files for the project.
+This is all new to me, so I decided to quickly ask Bing chat what it thought was
+a good idea:
+#+begin_src
+Here are some steps to set up a basic CMake that includes the Metal APIs:
+1. First, you need to install CMake on your system. You can download it from the official website.
+2. Next, you need to create a new CMake project and add the Metal APIs to it. You can do this by adding the following lines to your CMakeLists.txt file:
+
+```
+cmake_minimum_required(VERSION 3.0)
+project(MyMetalProject)
+
+set(CMAKE_CXX_STANDARD 14)
+
+find_library(METAL_LIBRARY Metal)
+find_library(CORE_FOUNDATION_LIBRARY CoreFoundation)
+
+add_executable(MyMetalProject main.cpp)
+
+target_link_libraries(MyMetalProject ${METAL_LIBRARY} ${CORE_FOUNDATION_LIBRARY})
+```
+
+3. Now you can create a new file called main.cpp and add some code that uses the Metal APIs.
+
+4. Finally, you can build your project using CMake and run it.
+
+I hope this helps! Let me know if you have any other questions.
+#+end_src
+
+** Source Files
+We will put the code under a folder called ~src/~. We name our starting point ~main.cpp~, but you can
+name it something else if you please. Just make sure you update the Cmake file.
+
+** Building Project
+We will need to modify our CMakeLists a bit, since we want our source code
+to be in the ~src/~ folder. Specifically, our add_executable should have the
+path ~./src/main.cpp~.
+#+begin_src makefile txt :tangle ./CmakeLists.txt
+cmake_minimum_required (VERSION 3.20)
+project (compute_sumarrays)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
+
+find_library(METAL_LIBRARY Metal REQUIRED)
+find_library(CORE_FOUNDATION_LIBRARY CoreFoundation REQUIRED)
+
+add_executable(compute_sumarrays
+  ./src/main.cpp
+)
+
+target_link_libraries(compute_sumarrays
+  ${METAL_LIBRARY}
+  ${CORE_FOUNDATION_LIBRARY}
+)
+#+end_src
+
+Now that your ~CMakeLists.txt~ file is set up, here is what to do next:
+#+begin_src bash
+  # you should be in the root of your project
+  pwd
+
+  mkdir build
+  cd build
+  # start configuration, 2nd argument is
+  # the path to the CMakeLists.txt directory.
+  cmake ../
+#+end_src
+
+This will generate a Makefile in your ~build~ directory.
+You do not need to do anything to that file. When ready to
+build, just type ~make~ in that directory, and it will
+create an executable which will have the same name as your project.
+
+* Initialization
+Once all the structure is there, we move on to the main file of our project.
+For this tutorial, I will assume all of our code is inside that file.
+
+#+NAME: StartingPoint
+#+begin_src C++ :tangle ./src/main.cpp
+  #include <iostream>
+
+  int main() {
+    std::cout << "hi world 2" << std::endl;
+  
+    return 0;
+  }
+#+end_src
+
+#+RESULTS:
+: hi world

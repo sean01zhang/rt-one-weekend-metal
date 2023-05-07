@@ -1,0 +1,19 @@
+cmake_minimum_required (VERSION 3.20)
+project (raytrace_metal)
+
+set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
+
+include_directories(${CMAKE_SOURCE_DIR}/lib/metal-cpp)
+
+add_executable(raytrace_metal
+  ./src/main.cc
+)
+
+target_link_libraries(raytrace_metal
+  stdc++ 
+  "-framework Metal"
+  "-framework Foundation"
+  "-framework QuartzCore"
+  objc
+)

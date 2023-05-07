@@ -1,0 +1,12 @@
+#macos things
+.DS_Store
+
+# automatic build files
+build/
+
+# emacs temp files
+*~
+
+# do not add packages to git
+lib/
+ltximg/
